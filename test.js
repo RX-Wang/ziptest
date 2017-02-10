@@ -89,9 +89,18 @@ request(options , function (error , response , body) {
                     mode : 0777  //设置文件权限
                 }));
             if(d.autoClose){
+                console.log('下载成功');
                 //unzip 解压
-                var unz = fs.createReadStream('./zip/' + downloadFileName[1])
-                    .pipe(unzip.Extract({ path: 'unzip' }));
+                var inteval = setInterval(
+                    function(){
+                        if(fs.existssync('./zip/' + downloadFileName[1])){
+                            fs.createReadStream('./zip/' + downloadFileName[1])
+                                .pipe(unzip.Extract({ path: 'unzip' }));
+                        }
+                    },500
+                );
+
+
 
                 /**
                  * 读取 csv 中的内容
