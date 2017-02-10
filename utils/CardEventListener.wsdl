@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:s0="http://127.0.0.1:8106/CardEventListener" targetNamespace="http://127.0.0.1:8106/CardEventListener">
+	<types>
+		<s:schema targetNamespace="http://127.0.0.1:8106/CardEventListener" elementFormDefault="qualified">
+			<s:element name="event" type="s:string"/>
+			<s:element name="response" type="s:string"/>
+		</s:schema>
+	</types>
+	<message name="newEventSoapIn">
+		<part name="newEventSoapIn" element="s0:event"/>
+	</message>
+	<message name="newEventSoapOut">
+		<part name="newEventSoapOut" element="s0:response"/>
+	</message>
+	<portType name="EventSoap">
+		<operation name="newEvent">
+			<input name="newEventSoapIn" message="s0:newEventSoapIn"/>
+			<output name="newEventSoapOut" message="s0:newEventSoapOut"/>
+		</operation>
+	</portType>
+	<binding name="EventSoap" type="s0:EventSoap">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="newEvent">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="CardEventListener">
+		<documentation>Listener service for CardServer</documentation>
+		<port name="EventListenerSoap" binding="s0:EventSoap">
+			<soap:address location="http://127.0.0.1:8106/CardEventListener"/>
+		</port>
+	</service>
+</definitions>
+
