@@ -70,6 +70,7 @@ var options = {
     form   : form_data
 };
 
+var dFileName = '';
 request(options , function (error , response , body) {
     if (error) throw new Error(error);
     var b = JSON.parse(body);
@@ -81,40 +82,47 @@ request(options , function (error , response , body) {
     url_path_array.map(function(val){
         downloadFileName = val.split('=');
         if(downloadFileName[0] === 'downloadFileName'){
-            console.log('downloadFileName:' + downloadFileName[1]);
-            //读网络文件并写本地
-            var d = request(url_path)
-                .pipe(fs.createWriteStream('./zip/' + downloadFileName[1],{
-                    flags: 'w',
-                    mode : 0777  //设置文件权限
-                }));
-            if(d.autoClose){
-                console.log('下载成功');
-                //unzip 解压
-                var inteval = setInterval(
-                    function(){
-                        if(fs.existssync('./zip/' + downloadFileName[1])){
-                            fs.createReadStream('./zip/' + downloadFileName[1])
-                                .pipe(unzip.Extract({ path: 'unzip' }));
-                        }
-                    },500
-                );
-
-
-
-                /**
-                 * 读取 csv 中的内容
-                 */
-                 /*var fileStr = fs.readFileSync('./unzip/20885215304321060156_20170120_ҵ����ϸ(����).csv', {encoding:'binary'});
-                 var buf = new Buffer(fileStr, 'binary');
-                 var str = iconv.decode(buf, 'GBK');
-                 console.log(str);*/
-            }
+            dFileName = downloadFileName[1];
+            return console.log('downloadFileName:' + downloadFileName[1]);
         }
-
     });
-});
+    //读网络文件并写本地
+    var d = request(url_path)
+        .pipe(fs.createWriteStream('./zip/' + dFileName,{
+            flags: 'w',
+            mode : 0777  //设置文件权限
+        }));
+    console.log('下载成功');
 
+    setTimeout(function(){
+        //unzip 解压
+        var inteval = setInterval(
+            function(){
+                // if(d.autoClose){
+                console.log(__dirname + '/zip/' + dFileName);
+                if(fs.existsSync(__dirname + '/zip/' + dFileName)){
+                    fs.createReadStream(__dirname + '/zip/' + dFileName)
+                        .pipe(unzip.Extract({ path: 'unzip' }));
+                    console.log('正在解压');
+                    var unzipInterval = setInterval(function(){
+                        /**
+                         * 读取 csv 中的内容
+                         */
+                        var fileStr = fs.readFileSync('./unzip/20885215304321060156_20170120_ҵ����ϸ.csv', {encoding:'binary'});
+                        var buf = new Buffer(fileStr, 'binary');
+                        var str = iconv.decode(buf, 'GBK');
+                        console.log(str);
+                        clearInterval(unzipInterval);
+                    },100);
+
+                    clearInterval(inteval);
+                }else{
+                    console.log('not exist: %s',dFileName);
+                }
+            },100
+        );
+    },50);
+});
 
 
 
